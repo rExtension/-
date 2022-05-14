@@ -1,0 +1,10 @@
+
+# Ignore Files
+.ignore/*
+
+# Extension Image and Audio
+audio/*
+image/*
+
+# macOS
+.DS_Store
