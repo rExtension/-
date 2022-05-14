@@ -296,26 +296,36 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 						},
 						"rExtension_Star_Skill_guojia_dingliao": {
 							name: "定辽",
-							des: "出牌阶段限一次，你可将一张牌交给一名其他角色（不能选择相同类型的牌及相同的角色）；若如此做，其视为对你指定的另一名角色使用一张：若你交给其的牌为锦囊牌，则为该锦囊牌，反之为「杀」，然后你与其各摸一张牌。",
-							desColour: "出牌阶段限一次，你可将一张牌交给一名其他角色（不能选择相同类型的牌）；若如此做，其视为对你指定的另一名角色使用一张普通锦囊牌并与你各摸一张牌。",
+							des: "出牌阶段，你可将一张牌交给一名其他角色（不能弃置相同类型的牌且不能指定相同的角色）；若如此做，其视为对你指定的另一名角色使用一张普通锦囊牌并与你各摸一张牌。",
+							desColour: "出牌阶段，你可将一张牌交给一名其他角色（不能弃置相同类型的牌且不能指定相同的角色）；若如此做，其视为对你指定的另一名角色使用一张普通锦囊牌并与你各摸一张牌。",
 							content: {
+								init: (player, skill) => {
+									if (!player.node.count) player.node.count = {};
+									player.node.count[skill] = {
+										target: [],
+										cards: [],
+									};
+								},
+								group: "rExtension_Star_Skill_guojia_dingliao_refresh",
 								audio: ["dingliao", `ext:${translate}/audio/skill:2`],
 								enable: "phaseUse",
-								usable: 1,
+								// usable: 1,
 								position: "he",
-								filterCard: true,
-								filter: (_event, player) => player.countCards("he") > 0,
+								filterCard: (card, player, _target) => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.includes(get.type(card, "trick")),
+								filter: (_event, player) => player.hasCards("he", card => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.includes(get.type(card, "trick"))),
 								check: card => 8 - get.value(card),
 								selectTarget: 2,
 								multitarget: true,
 								discard: false,
 								lose: false,
 								targetprompt: ["得到牌", "目标"],
-								filterTarget: (_card, player, target) => ui.selected.targets.length == 0 ? player !== target : ui.selected.targets[0] !== target,
+								filterTarget: (_card, player, target) => ui.selected.targets.length == 0 ? (player !== target && !player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.includes(target)) : ui.selected.targets[0] !== target,
 								delay: false,
 								content: () => {
 									"step 0"
 									// 直接写cards会报错，原因未知
+									player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.push(targets[0]);
+									player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.push(get.type(event.cards[0], "trick"));
 									targets[0].gain(event.cards, player, "give");
 									"step 1"
 									let cards = lib.inpile.filter(card => get.type(card) === "trick" && lib.filter.filterTarget({ name: card, isCard: true }, targets[0], targets[1]));
@@ -327,7 +337,8 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 									"step 2"
 									if (result.bool) {
 										let card = { name: result.links[0][2] };
-										targets[0].useCard(card, targets[1]);
+										let next = targets[0].useCard(card, targets[1]);
+										next.cards = event.cards;
 									}
 									"step 3"
 									game.asyncDraw([player, targets[0]]);
@@ -347,6 +358,22 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 									},
 									order: 8.5,
 									expose: 0.2
+								},
+								subSkill: {
+									refresh: {
+										trigger: {
+											player: "phaseBegin",
+										},
+										silent: true,
+										charlotte: true,
+										content: () => {
+											player.node.count["rExtension_Star_Skill_guojia_dingliao"] = {
+												target: [],
+												cards: [],
+											};
+										},
+										sub: true
+									}
 								}
 							}
 						}
