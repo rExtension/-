@@ -11,11 +11,11 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		intro: "夜色斑斓，星河璀璨",
 		version: "0.0.0",
 		branch: "Development",
-		build: 7,
+		build: 0,
 		Year: 2022,
 		Month: "05",
-		Date: 13,
-		nextPreview: 9,
+		Date: 14,
+		nextPreview: 1,
 		times: "001",
 	};
 
@@ -338,7 +338,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 									if (result.bool) {
 										let card = { name: result.links[0][2] };
 										let next = targets[0].useCard(card, targets[1]);
-										next.cards = event.cards;
+										// next.cards = event.cards;
 									}
 									"step 3"
 									game.asyncDraw([player, targets[0]]);
