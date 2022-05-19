@@ -1,7 +1,7 @@
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // This File is From Theopse (Self@theopse.org)
 // Licensed under BSD-2-Caluse
-// File: extension.js (rExtension/星河灿烂/extension.js)
+// File: extension.js (rExtension/extension-star/extension.js)
 // Content:  
 // Copyright (c) 2022 Theopse Organization All rights reserved
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -14,7 +14,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		build: 0,
 		Year: 2022,
 		Month: "05",
-		Date: 14,
+		Date: 19,
 		nextPreview: 1,
 		times: "001",
 	};
@@ -242,19 +242,9 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 								filterTarget: (_card, player, target) => player !== target && target.hasCards("h"),
 								selectTarget: 1,
 								content: () => {
-									"step 0"
 									game.log(player, "观看了", target, "的牌");
-									player.chooseControl("ok").set("dialog", ["洞悉", target.getCards("h")]);
+									player.chooseControl("ok").set("dialog", [get.translation(event.name), target.getCards("h")]);
 									event.finish();
-									"step 1"
-									// let cards = target.getCards("h", card => !card.hasGaintag("visualCard"));
-									// if (cards.length === 1) event._result = {bool: true, cards: cards};
-									// else if (cards.length > 1) player.choosePlayerCard(target, "h", 1, `洞悉: 明示${get.translation(target)}一张牌`, "visible", true).set("onlyUnVisualed", true);
-									"step 2"
-									// if (result.bool && result.cards && result.cards.length) {
-									//	 target.addGaintag(result.cards, "visualCard");
-									//	 target.showCards(result.cards);
-									// }
 								}
 							}
 						},
@@ -275,64 +265,66 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 								audio: 2,
 								content: () => {
 									"step 0"
-									var prompt = `即将失去${get.translation(trigger.result.cards)}是否发动【洞悉】？`;
-									var next = player.choosePlayerCard(player, prompt, trigger.position);
+									// 
+									event._skill = "rExtension_Star_Skill_guojia_dongxi";
+									"step 1"
+									var prompt = `即将失去${get.translation(trigger.result.cards)}是否发动【${get.translation(event._skill)}】？`;
+									var next = player.choosePlayerCard(player, prompt, trigger.position).set("prompt2", "当你即将被其他角色获得或弃置而失去牌时，你可改为自己选择失去的牌。");
 									next.set("ai", function (button) {
 										return 20 - get.value(button.link);
 									});
 									next.filterButton = trigger.filterButton;
 									next.selectButton = trigger.result.cards.length;
-									next.setHiddenSkill("rExtension_Star_Skill_guojia_dongxi");
-									"step 1"
+									next.setHiddenSkill(event._skill);
+									"step 2"
 									if (result.bool) {
-										player.logSkill("rExtension_Star_Skill_guojia_dongxi");
+										player.logSkill(event._skill);
 										trigger.result.cards = result.links.slice(0);
 										trigger.result.links = result.links.slice(0);
 										trigger.cards = result.links.slice(0);
 										trigger.untrigger();
 									}
+									"step 3"
+									delete event._skill;
 								}
 							}
 						},
 						"rExtension_Star_Skill_guojia_dingliao": {
 							name: "定辽",
-							des: "出牌阶段，你可将一张牌交给一名其他角色（不能弃置相同类型的牌且不能指定相同的角色）；若如此做，其视为对你指定的另一名角色使用一张普通锦囊牌并与你各摸一张牌。",
-							desColour: "出牌阶段，你可将一张牌交给一名其他角色（不能弃置相同类型的牌且不能指定相同的角色）；若如此做，其视为对你指定的另一名角色使用一张普通锦囊牌并与你各摸一张牌。",
+							des: "出牌阶段，你可将一张牌交给一名其他角色并声明一种普通锦囊牌（不能选择相同类型的牌）；若如此做，其视为对你指定的另一名角色使用你声明的牌并与你各摸一张牌。",
+							desColour: "出牌阶段，你可将一张牌交给一名其他角色并声明一种普通锦囊牌（不能选择相同类型的牌）；若如此做，其视为对你指定的另一名角色使用你声明的牌并与你各摸一张牌。",
 							content: {
 								init: (player, skill) => {
 									if (!player.node.count) player.node.count = {};
-									player.node.count[skill] = {
-										target: [],
-										cards: [],
-									};
+									player.node.count[skill] = Array.new();
 								},
 								group: "rExtension_Star_Skill_guojia_dingliao_refresh",
 								audio: ["dingliao", `ext:${translate}/audio/skill:2`],
 								enable: "phaseUse",
 								// usable: 1,
 								position: "he",
-								filterCard: (card, player, _target) => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.includes(get.type(card, "trick")),
-								filter: (_event, player) => player.hasCards("he", card => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.includes(get.type(card, "trick"))),
+								filterCard: (card, player, _target) => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].includes(get.type(card, "trick")),
+								filter: (_event, player) => player.hasCards("he", card => !player.node.count["rExtension_Star_Skill_guojia_dingliao"].includes(get.type(card, "trick"))),
 								check: card => 8 - get.value(card),
 								selectTarget: 2,
 								multitarget: true,
 								discard: false,
 								lose: false,
 								targetprompt: ["得到牌", "目标"],
-								filterTarget: (_card, player, target) => ui.selected.targets.length == 0 ? (player !== target && !player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.includes(target)) : ui.selected.targets[0] !== target,
+								filterTarget: (_card, player, target) => ui.selected.targets.length == 0 ? (player !== target /* && !player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.includes(target) */) : ui.selected.targets[0] !== target,
 								delay: false,
 								content: () => {
 									"step 0"
 									// 直接写cards会报错，原因未知
-									player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.push(targets[0]);
-									player.node.count["rExtension_Star_Skill_guojia_dingliao"].cards.push(get.type(event.cards[0], "trick"));
+									// player.node.count["rExtension_Star_Skill_guojia_dingliao"].target.push(targets[0]);
+									player.node.count["rExtension_Star_Skill_guojia_dingliao"]./* cards. */push(get.type(event.cards[0], "trick"));
 									targets[0].gain(event.cards, player, "give");
 									"step 1"
 									let cards = lib.inpile.filter(card => get.type(card) === "trick" && lib.filter.filterTarget({ name: card, isCard: true }, targets[0], targets[1]));
 									if (!cards.length) event.goto(3);
 									else {
 										cards = cards.map(name => ["锦囊", "", name]);
-										targets[0].chooseButton([get.translation(event.name), [cards, "vcard"]], true).set("ai", button => button.link[2] === _status.event.choice? 1 : 0);
+										player.chooseButton([get.translation(event.name), [cards, "vcard"]], true).set("ai", button => button.link[2] === _status.event.choice? 1 : 0);
 									}
 									"step 2"
 									if (result.bool) {
@@ -367,10 +359,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 										silent: true,
 										charlotte: true,
 										content: () => {
-											player.node.count["rExtension_Star_Skill_guojia_dingliao"] = {
-												target: [],
-												cards: [],
-											};
+											player.node.count["rExtension_Star_Skill_guojia_dingliao"].length = 0;
 										},
 										sub: true
 									}
@@ -387,27 +376,6 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							if (des || desColour) lib.translate[`${skill}_info`] = config.colour_enable ? (desColour ? desColour : des) : des;
 						}
 					}
-
-					if (!lib.skill["_doublegroup_choice"]) lib.skill["_doublegroup_choice"] = {
-						trigger: {
-							global: "gameStart",
-							player: "enterGame",
-						},
-						forced: true,
-						charlotte: true,
-						firstDo: true,
-						popup: false,
-						filter: function (event, player) {
-							return get.mode() != "guozhan" && get.is.double(player.name1) && !player._groupChosen;
-						},
-						content: function () {
-							"step 0"
-							player._groupChosen = true;
-							player.chooseControl(get.is.double(player.name1, true)).set("prompt", "请选择你的势力");
-							"step 1"
-							player.changeGroup(result.control);
-						},
-					}
 				}
 				// Add Character
 				if (config.character_enable) {
@@ -419,9 +387,9 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							hp: 3,
 							replace: "guojia",
 							maxHp: 3,
-							rank: { rarity: "epic" },
-							translate: "郭嘉",
-							skills: ["rExtension_Star_Skill_guojia_tiandu", "rExtension_Star_Skill_guojia_dongxi", "rExtension_Star_Skill_guojia_dingliao"],
+							rank: { rarity: "rare" },
+							translate: "SP郭嘉",
+							skills: ["rExtension_Star_Skill_guojia_tiandu", "rExtension_Star_Skill_guojia_dongxi", "rExtension_Star_Skill_guojia_dingliao", "rExtension_OtherLib_Noname_Test"],
 							tags: [
 								`ext:${translate}/image/character/guojia${dot}`,
 								`died:ext:${translate}/audio/die/guojia.mp3`,
@@ -459,7 +427,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 						}
 						if (info.replace) {
 							if (!lib.characterReplace[info.replace]) lib.characterReplace[info.replace] = [info.replace];
-							if (!lib.characterReplace[info.replace].contains(name)) lib.characterReplace[info.replace].push(name);
+							if (!lib.characterReplace[info.replace].includes(name)) lib.characterReplace[info.replace].push(name);
 						}
 					}
 
@@ -479,7 +447,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		config: {},
 		help: {},
 		package: {
-			intro: "",
+			intro: extInfo.intro,
 			author: "Rintim",
 			diskURL: "",
 			forumURL: "",

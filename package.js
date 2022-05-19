@@ -1,7 +1,7 @@
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // This File is From Theopse (Self@theopse.org)
 // Licensed under BSD-2-Caluse
-// File: package.js (rExtension/星河灿烂/package.js)
+// File: package.js (rExtension/extension-star/package.js)
 // Content:  
 // Copyright (c) 2022 Theopse Organization All rights reserved
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
