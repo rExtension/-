@@ -8,7 +8,7 @@
 
 本扩展重在设计，如有好的设计也欢迎提供。
 
-> Version: Build 0 Form 1
+> Version: Build 1
 
 > 本扩展目前为测试阶段，欢迎反馈BUG
 

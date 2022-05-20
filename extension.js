@@ -11,13 +11,12 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 	// 设置元数据
 	let extInfo = {
 		intro: "夜色斑斓，星河璀璨",
-		version: "0.0.0",
-		branch: "Development",
-		build: 0,
+		version: "0.0.1",
+		branch: "Master",
+		build: 1,
 		Year: 2022,
 		Month: "05",
 		Date: 21,
-		nextPreview: 1,
 		times: "001",
 	};
 	// 这其实完全不是元数据（
