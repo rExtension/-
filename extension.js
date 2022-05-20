@@ -2,11 +2,13 @@
 // This File is From Theopse (Self@theopse.org)
 // Licensed under BSD-2-Caluse
 // File: extension.js (rExtension/extension-star/extension.js)
-// Content:  
+// Content:  Extension-star's main extension
 // Copyright (c) 2022 Theopse Organization All rights reserved
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 game.import("extension", (lib, game, ui, get, ai, _status) => {
+	// Set Meta-info
+	// 设置元数据
 	let extInfo = {
 		intro: "夜色斑斓，星河璀璨",
 		version: "0.0.0",
@@ -14,22 +16,28 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 		build: 0,
 		Year: 2022,
 		Month: "05",
-		Date: 19,
+		Date: 21,
 		nextPreview: 1,
 		times: "001",
 	};
+	// 这其实完全不是元数据（
 
 	return {
-		name: "星河灿烂",
+		name: "星河灿烂", // extension-star
+		// Make the extension not editable in the game
+		// 让扩展不能在游戏内被编辑
 		editable: false,
 		content: (config, _pack) => {
 			// Load Extension
+			// 读取扩展主要信息
 			lib.arenaReady.push(() => {
-				// lib.extensionPack["reHeart"]
-				let translate = "星河灿烂";
-				let extension = "Star";
-				let type = "rExtension";
+				// Define information
+				// 定义变量
+				const translate = "星河灿烂";
+				const extension = "Star";
+				const type = "rExtension";
 
+				// 设置二级介绍
 				let intro2 = [
 					"<span style=\"color:#1688F2\">Author: Rintim",
 					`Version: ${["Release", "Preview"].includes(extInfo.branch) ?
@@ -41,7 +49,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					"本扩展目前为测试阶段，欢迎反馈BUG</span>",
 					"- - - - - - - - - - - - - - - - - - - - - - - - -",
 					"●仓库地址: ",
-					"- Gitlab:/Rintim/rintim-extension-star",
+					"- Gitlab:/rExtension/extension-star",
 					"●前置需求: ",
 					"- reHeart",
 					"- StandardLib",
@@ -55,6 +63,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					])
 				}
 				// Set Update Strings
+				// 设置更新日志
 				{
 					lib.extensionPack[translate].version = extInfo.version;
 					let strings = [
@@ -66,6 +75,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					game.showExtensionChangeLog(strings.join("</br>"), translate);
 				}
 				// Set Menu
+				// 设置扩展设定菜单
 				{
 					let _delete = lib.extensionMenu[`extension_${translate}`].delete;
 
@@ -151,6 +161,8 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					lib.extensionMenu[`extension_${translate}`].delete = _delete;
 				}
 				// Check Dependence
+				// 检查前置
+				// TODO: 优化显示
 				{
 					let bool = true;
 					let abort = [];
@@ -170,6 +182,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					}
 				}
 				// Add Skill
+				// 添加扩展技能
 				if (config.character_enable) {
 					let skills = {
 						"rExtension_Star_Skill_guojia_tiandu": {
@@ -329,8 +342,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 									"step 2"
 									if (result.bool) {
 										let card = { name: result.links[0][2] };
-										let next = targets[0].useCard(card, targets[1]);
-										// next.cards = event.cards;
+										targets[0].useCard(card, targets[1]);
 									}
 									"step 3"
 									game.asyncDraw([player, targets[0]]);
@@ -378,6 +390,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 					}
 				}
 				// Add Character
+				// 添加扩展武将
 				if (config.character_enable) {
 					let dot = config.dynamic_enable ? ".gif" : ".png";
 					let characters = {
@@ -389,7 +402,7 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 							maxHp: 3,
 							rank: { rarity: "rare" },
 							translate: "SP郭嘉",
-							skills: ["rExtension_Star_Skill_guojia_tiandu", "rExtension_Star_Skill_guojia_dongxi", "rExtension_Star_Skill_guojia_dingliao", "rExtension_OtherLib_Noname_Test"],
+							skills: ["rExtension_Star_Skill_guojia_tiandu", "rExtension_Star_Skill_guojia_dongxi", "rExtension_Star_Skill_guojia_dingliao"],
 							tags: [
 								`ext:${translate}/image/character/guojia${dot}`,
 								`died:ext:${translate}/audio/die/guojia.mp3`,
@@ -441,15 +454,12 @@ game.import("extension", (lib, game, ui, get, ai, _status) => {
 				}
 			});
 		},
-		precontent: () => {
-
-		},
 		config: {},
 		help: {},
 		package: {
 			intro: extInfo.intro,
 			author: "Rintim",
-			diskURL: "",
+			diskURL: "https://gitlab.com/rExtension/extension-star",
 			forumURL: "",
 			version: "0.0.0",
 		}, files: { "character": [], "card": [], "skill": [] }
